@@ -2,55 +2,309 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Usublox</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usublox - Playable Web Hub</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #0f1117;
+      color: #f1f2f6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #ff4757;
+      font-size: 2.5rem;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+    }
+    p.subtitle {
+      color: #a4b0be;
+      font-size: 0.95rem;
+    }
+    .controls-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      background-color: #2f3542;
+      color: #ffffff;
+      border: 2px solid #57606f;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      background-color: #ff4757;
+      border-color: #ff6b81;
+      transform: translateY(-2px);
+    }
+    button.active {
+      background-color: #ff4757;
+      border-color: #ff6b81;
+    }
+    #canvas-container {
+      position: relative;
+      border: 3px solid #2f3542;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      overflow: hidden;
+      background-color: #1e272e;
+    }
+    canvas {
+      display: block;
+    }
+    .info-panel {
+      margin-top: 15px;
+      background: #1e272e;
+      padding: 12px 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #2f3542;
+    }
+    .admin-section {
+      margin-top: 25px;
+      width: 100%;
+      max-width: 600px;
+      background: #14171d;
+      border: 1px dashed #ff4757;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .admin-section h3 {
+      color: #ff6b81;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .admin-input-group {
+      display: flex;
+      gap: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #2f3542;
+      background: #0f1117;
+      color: #fff;
+    }
+    #admin-output {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #2ed573;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 10px;">
+<body>
 
-  <h1 style="text-align: center;">Usublox</h1>
+  <header>
+    <h1>USUBLOX</h1>
+    <p class="subtitle">Live Arcade Hub & Execution Server</p>
+  </header>
 
-  <!-- Auth Screen -->
-  <div id="auth-box">
-    <h3>Sign Up / Sign In</h3>
-    <input type="text" id="username" placeholder="Username" style="display: block; width: 100%; margin: 8px 0; padding: 8px; box-sizing: border-box;"><br>
-    <input type="password" id="password" placeholder="Password" style="display: block; width: 100%; margin: 8px 0; padding: 8px; box-sizing: border-box;"><br>
-    <button id="signup-btn" style="padding: 8px 16px;">Sign Up</button>
-    <button id="signin-btn" style="padding: 8px 16px;">Sign In</button>
+  <div class="controls-bar">
+    <button id="btn-box" class="active" onclick="switchGame('box')">Box Runner (WASD)</button>
+    <button id="btn-clicker" onclick="switchGame('clicker')">Target Clicker</button>
   </div>
 
-  <!-- Signed-In Dashboard -->
-  <div id="user-dashboard" style="display: none; border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
-    <h2 id="signed-in-text"></h2>
-    
-    <!-- Admin Command Panel -->
-    <div id="admin-panel" style="display: none; border: 2px red solid; padding: 10px; margin: 15px 0; background: #fff0f0;">
-      <h3 style="color: red; margin-top: 0;">GLOBAL ADMIN CONSOLE (Applies to All Games)</h3>
-      <p style="font-size: 12px; color: #555;">Command Syntax:<br>
-        <code>ban [username]</code><br>
-        <code>kick [username]</code><br>
-        <code>message as [sender] to [recipient] [message]</code>
-      </p>
-      <input type="text" id="admin-cmd" placeholder="Enter command..." style="width: 70%; padding: 6px;">
-      <button id="run-cmd-btn" style="padding: 6px 12px; background: red; color: white; border: none; cursor: pointer;">Execute</button>
-    </div>
-
-    <!-- Games Hub -->
-    <div style="margin: 15px 0; border: 1px solid #ddd; padding: 10px;">
-      <h3>Usublox Games Hub</h3>
-      <button onclick="playGame('Blox World')">Play Blox World</button>
-      <button onclick="playGame('Obby Run')">Play Obby Run</button>
-      <div id="game-view" style="margin-top: 10px; padding: 10px; background: #f9f9f9; display: none;"></div>
-    </div>
-
-    <!-- Global Chat Feed -->
-    <h3>Global Server Feed</h3>
-    <div id="chat-box" style="border: 1px solid #aaa; height: 120px; overflow-y: scroll; padding: 8px; background: #fafafa; font-size: 14px;"></div>
-
-    <br>
-    <button id="signout-btn" style="padding: 6px 12px;">Sign Out</button>
+  <div id="canvas-container">
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
   </div>
 
-  <p id="message" style="margin-top: 15px; color: darkred; font-weight: bold;"></p>
+  <div class="info-panel">
+    <span><strong>Game Mode:</strong> <span id="mode-text">Box Runner</span></span>
+    <span><strong>Score:</strong> <span id="score-text" style="color: #2ed573; font-weight: bold;">0</span></span>
+  </div>
 
-  <script src="script.js"></script>
+  <div class="admin-section">
+    <h3>Admin Command Console</h3>
+    <div class="admin-input-group">
+      <input type="text" id="admin-key" placeholder="Enter admin user / key (e.g. usuthebanna)">
+      <button onclick="verifyAdmin()">Authenticate</button>
+    </div>
+    <div id="admin-output"></div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreText = document.getElementById('score-text');
+    const modeText = document.getElementById('mode-text');
+
+    let currentGame = 'box';
+    let gameLoopId = null;
+    let score = 0;
+
+    // Player & Game State
+    let player = { x: 285, y: 185, size: 30, speed: 5, color: '#00d2d3' };
+    let coin = { x: 100, y: 100, size: 18, color: '#ffa502' };
+    let enemy = { x: 400, y: 50, size: 24, speedX: 3, speedY: 3, color: '#ff4757' };
+    let keys = {};
+
+    // Keyboard Listeners
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) {
+        e.preventDefault();
+      }
+      keys[e.key.toLowerCase()] = true;
+    });
+    window.addEventListener('keyup', (e) => {
+      keys[e.key.toLowerCase()] = false;
+    });
+
+    // Canvas Click Event for Clicker Game
+    canvas.addEventListener('click', (e) => {
+      if (currentGame !== 'clicker') return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      const dist = Math.hypot(clickX - coin.x, clickY - coin.y);
+      if (dist < coin.size + 10) {
+        score += 5;
+        scoreText.innerText = score;
+        spawnCoin();
+      }
+    });
+
+    function spawnCoin() {
+      coin.x = Math.floor(Math.random() * (canvas.width - 40)) + 20;
+      coin.y = Math.floor(Math.random() * (canvas.height - 40)) + 20;
+    }
+
+    function switchGame(mode) {
+      currentGame = mode;
+      score = 0;
+      scoreText.innerText = score;
+
+      document.getElementById('btn-box').classList.remove('active');
+      document.getElementById('btn-clicker').classList.remove('active');
+
+      if (mode === 'box') {
+        document.getElementById('btn-box').classList.add('active');
+        modeText.innerText = 'Box Runner (WASD / Arrows)';
+        player.x = 285;
+        player.y = 185;
+        spawnCoin();
+      } else {
+        document.getElementById('btn-clicker').classList.add('active');
+        modeText.innerText = 'Target Clicker';
+        spawnCoin();
+      }
+    }
+
+    function update() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (currentGame === 'box') {
+        // Handle Movement
+        if (keys['w'] || keys['arrowup']) player.y = Math.max(0, player.y - player.speed);
+        if (keys['s'] || keys['arrowdown']) player.y = Math.min(canvas.height - player.size, player.y + player.speed);
+        if (keys['a'] || keys['arrowleft']) player.x = Math.max(0, player.x - player.speed);
+        if (keys['d'] || keys['arrowright']) player.x = Math.min(canvas.width - player.size, player.x + player.speed);
+
+        // Move Bouncing Enemy
+        enemy.x += enemy.speedX;
+        enemy.y += enemy.speedY;
+
+        if (enemy.x <= 0 || enemy.x + enemy.size >= canvas.width) enemy.speedX *= -1;
+        if (enemy.y <= 0 || enemy.y + enemy.size >= canvas.height) enemy.speedY *= -1;
+
+        // Coin Collision
+        if (
+          player.x < coin.x + coin.size &&
+          player.x + player.size > coin.x &&
+          player.y < coin.y + coin.size &&
+          player.y + player.size > coin.y
+        ) {
+          score += 10;
+          scoreText.innerText = score;
+          spawnCoin();
+        }
+
+        // Enemy Collision (Reset Score)
+        if (
+          player.x < enemy.x + enemy.size &&
+          player.x + player.size > enemy.x &&
+          player.y < enemy.y + enemy.size &&
+          player.y + player.size > enemy.y
+        ) {
+          score = 0;
+          scoreText.innerText = score;
+          player.x = 285;
+          player.y = 185;
+        }
+
+        // Draw Player
+        ctx.fillStyle = player.color;
+        ctx.fillRect(player.x, player.y, player.size, player.size);
+
+        // Draw Enemy
+        ctx.fillStyle = enemy.color;
+        ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+
+        // Draw Coin
+        ctx.fillStyle = coin.color;
+        ctx.beginPath();
+        ctx.arc(coin.x + coin.size/2, coin.y + coin.size/2, coin.size/2, 0, Math.PI * 2);
+        ctx.fill();
+
+      } else if (currentGame === 'clicker') {
+        // Draw Target Coin
+        ctx.fillStyle = '#ff4757';
+        ctx.beginPath();
+        ctx.arc(coin.x, coin.y, coin.size + 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffa502';
+        ctx.beginPath();
+        ctx.arc(coin.x, coin.y, coin.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click the target!', canvas.width / 2, 40);
+      }
+
+      gameLoopId = requestAnimationFrame(update);
+    }
+
+    function verifyAdmin() {
+      const val = document.getElementById('admin-key').value.trim();
+      const output = document.getElementById('admin-output');
+
+      if (val.toLowerCase() === 'usuthebanna') {
+        output.style.color = '#2ed573';
+        output.innerText = '✓ Admin Access Granted: usuthebanna permissions active.';
+      } else {
+        output.style.color = '#ff4757';
+        output.innerText = '✗ Invalid Admin Key or User.';
+      }
+    }
+
+    // Start Engine
+    spawnCoin();
+    update();
+  </script>
 </body>
 </html>
