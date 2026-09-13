@@ -1,202 +1,221 @@
-// Global Database State
-const users = {}; 
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const app = express();
 
-// DOM References
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-const signupBtn = document.getElementById('signup-btn');
-const signinBtn = document.getElementById('signin-btn');
-const signoutBtn = document.getElementById('signout-btn');
+const PORT = process.env.PORT || 3000;
+const ADMIN_KEY = 'usuadminpowers';
 
-const authBox = document.getElementById('auth-box');
-const userDashboard = document.getElementById('user-dashboard');
-const signedInText = document.getElementById('signed-in-text');
-const adminPanel = document.getElementById('admin-panel');
-const adminCmdInput = document.getElementById('admin-cmd');
-const runCmdBtn = document.getElementById('run-cmd-btn');
-const chatBox = document.getElementById('chat-box');
-const gameView = document.getElementById('game-view');
-const message = document.getElementById('message');
+app.use(express.json());
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
-let currentUser = null;
+// In-Memory Storage
+const users = {}; // { usernameKey: { username, password, status: 'active'|'muted'|'banned' } }
+const sessions = {}; // active logged-in users
 
-// Helper function to append messages to global feed
-function addChatMessage(sender, recipient, text) {
-  const p = document.createElement('p');
-  p.style.margin = "4px 0";
-  if (recipient) {
-    p.innerHTML = `<strong>[PM ${sender} &rarr; ${recipient}]:</strong> ${text}`;
-  } else {
-    p.innerHTML = `<strong>[${sender}]:</strong> ${text}`;
+// Default Advertisements
+let ads = [
+  {
+    id: 'ad_1',
+    title: 'usuthebanna — YouTube',
+    description: 'Check out usuthebanna on YouTube for awesome gaming content and updates!',
+    url: 'https://www.youtube.com/@usuthebanna',
+    icon: '📺',
+    active: true
+  },
+  {
+    id: 'ad_2',
+    title: '@shootinggamenerf — YouTube',
+    description: 'Subscribe to @shootinggamenerf on YouTube for intense nerf battles and reviews!',
+    url: 'https://www.youtube.com/@shootinggamenerf',
+    icon: '🎯',
+    active: true
   }
-  chatBox.appendChild(p);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+];
 
-// Global Game Launcher (Admin privileges apply across all game instances)
-window.playGame = function(gameName) {
-  if (!currentUser) return;
-  gameView.style.display = 'block';
-  gameView.innerHTML = `<h4>Now Playing: ${gameName}</h4><p>Status: Active in server. Global admin permissions loaded.</p>`;
+// Admin Middleware
+const requireAdmin = (req, res, next) => {
+  const key = req.headers['x-admin-key'] || req.body.adminKey;
+  if (key !== ADMIN_KEY) {
+    return res.status(403).json({ error: 'Unauthorized: Invalid Admin Key' });
+  }
+  next();
 };
 
-// Sign Up Handler
-signupBtn.addEventListener('click', () => {
-  const user = usernameInput.value.trim();
-  const pass = passwordInput.value;
+// ----------------- USER AUTH ROUTES ----------------- //
 
-  if (!user || !pass) {
-    message.style.color = "red";
-    message.innerText = "Please enter both username and password.";
-    return;
+app.post('/api/signup', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Valid username and password required.' });
   }
 
-  if (users[user]) {
-    message.style.color = "red";
-    message.innerText = "Username already exists!";
-    return;
+  const key = username.toLowerCase().trim();
+  if (users[key]) {
+    return res.status(400).json({ error: 'Username already taken.' });
   }
 
-  // Grants automatic global admin power to 'usuthebanna'
-  const role = (user.toLowerCase() === 'usuthebanna') ? 'admin' : 'player';
+  users[key] = { username: username.trim(), password: String(password), status: 'active' };
+  sessions[key] = true;
 
-  users[user] = {
-    password: pass,
-    role: role,
-    isBanned: false,
-    isLoggedIn: false
+  res.json({ success: true, username: users[key].username });
+});
+
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password required.' });
+  }
+
+  const key = username.toLowerCase().trim();
+  const user = users[key];
+
+  if (!user || user.password !== String(password)) {
+    return res.status(401).json({ error: 'Invalid username or password.' });
+  }
+
+  if (user.status === 'banned') {
+    return res.status(403).json({ error: 'This account has been banned by an administrator.' });
+  }
+
+  sessions[key] = true;
+  res.json({ success: true, username: user.username, status: user.status });
+});
+
+// ----------------- PUBLIC ADS ROUTE ----------------- //
+
+app.get('/api/ads', (req, res) => {
+  const activeAds = ads.filter(ad => ad.active);
+  res.json({ success: true, ads: activeAds });
+});
+
+// ----------------- ADMIN API ROUTES ----------------- //
+
+// Verify Admin Key
+app.post('/api/admin/auth', requireAdmin, (res) => {
+  res.json({ success: true, message: 'Admin authenticated successfully.' });
+});
+
+// Fetch All Users
+app.get('/api/admin/users', requireAdmin, (req, res) => {
+  const userList = Object.values(users).map(u => ({
+    username: u.username,
+    status: u.status,
+    isLoggedIn: !!sessions[u.username.toLowerCase()]
+  }));
+  res.json({ success: true, users: userList });
+});
+
+// User Actions: Ban, Unban, Mute, Unmute, Kick
+app.post('/api/admin/users/action', requireAdmin, (req, res) => {
+  const { targetUser, action } = req.body;
+  const key = targetUser ? targetUser.toLowerCase().trim() : '';
+
+  if (!users[key]) {
+    return res.status(404).json({ error: 'User not found.' });
+  }
+
+  switch (action) {
+    case 'ban':
+      users[key].status = 'banned';
+      delete sessions[key];
+      break;
+    case 'unban':
+      users[key].status = 'active';
+      break;
+    case 'mute':
+      users[key].status = 'muted';
+      break;
+    case 'unmute':
+      users[key].status = 'active';
+      break;
+    case 'kick':
+      delete sessions[key];
+      break;
+    default:
+      return res.status(400).json({ error: 'Invalid action.' });
+  }
+
+  res.json({
+    success: true,
+    message: `User '${users[key].username}' action '${action}' applied successfully.`,
+    user: { username: users[key].username, status: users[key].status }
+  });
+});
+
+// Fetch All Ads (Admin View)
+app.get('/api/admin/ads', requireAdmin, (req, res) => {
+  res.json({ success: true, ads });
+});
+
+// Create Advertisement
+app.post('/api/admin/ads', requireAdmin, (req, res) => {
+  const { title, description, url, icon } = req.body;
+  if (!title || !description || !url) {
+    return res.status(400).json({ error: 'Title, description, and link URL are required.' });
+  }
+
+  const newAd = {
+    id: 'ad_' + Date.now(),
+    title: title.trim(),
+    description: description.trim(),
+    url: url.trim(),
+    icon: icon ? icon.trim() : '📢',
+    active: true
   };
 
-  message.style.color = "green";
-  message.innerText = `Account created for ${user} (${role}). You can now sign in!`;
+  ads.push(newAd);
+  res.json({ success: true, ad: newAd, message: 'Advertisement created successfully.' });
 });
 
-// Sign In Handler
-signinBtn.addEventListener('click', () => {
-  const user = usernameInput.value.trim();
-  const pass = passwordInput.value;
-  const account = users[user];
+// Update / Toggle Advertisement
+app.put('/api/admin/ads/:id', requireAdmin, (req, res) => {
+  const { id } = req.params;
+  const { title, description, url, icon, active } = req.body;
 
-  if (!account || account.password !== pass) {
-    message.style.color = "red";
-    message.innerText = "Incorrect username or password. Access denied.";
-    return;
+  const ad = ads.find(a => a.id === id);
+  if (!ad) {
+    return res.status(404).json({ error: 'Advertisement not found.' });
   }
 
-  // Block sign in if account has been banned by admin
-  if (account.isBanned) {
-    message.style.color = "red";
-    message.innerText = "Access Denied: Your account has been banned from Usublox.";
-    return;
-  }
+  if (title !== undefined) ad.title = title.trim();
+  if (description !== undefined) ad.description = description.trim();
+  if (url !== undefined) ad.url = url.trim();
+  if (icon !== undefined) ad.icon = icon.trim();
+  if (active !== undefined) ad.active = Boolean(active);
 
-  // Successful Sign In
-  currentUser = user;
-  account.isLoggedIn = true;
-
-  authBox.style.display = 'none';
-  userDashboard.style.display = 'block';
-  signedInText.innerText = `signed in ${user}`;
-
-  // Reveal global admin console if user is admin
-  if (account.role === 'admin') {
-    adminPanel.style.display = 'block';
-  } else {
-    adminPanel.style.display = 'none';
-  }
-
-  message.innerText = '';
-  addChatMessage("System", null, `${user} joined Usublox.`);
+  res.json({ success: true, ad, message: 'Advertisement updated successfully.' });
 });
 
-// Sign Out / Logout
-signoutBtn.addEventListener('click', () => logoutUser("Signed out."));
+// Delete Advertisement
+app.delete('/api/admin/ads/:id', requireAdmin, (req, res) => {
+  const { id } = req.params;
+  const initialLength = ads.length;
+  ads = ads.filter(a => a.id !== id);
 
-function logoutUser(reason) {
-  if (currentUser && users[currentUser]) {
-    users[currentUser].isLoggedIn = false;
-  }
-  currentUser = null;
-  authBox.style.display = 'block';
-  userDashboard.style.display = 'none';
-  gameView.style.display = 'none';
-  usernameInput.value = '';
-  passwordInput.value = '';
-  message.style.color = "black";
-  message.innerText = reason;
-}
-
-// Global Admin Command Parser
-runCmdBtn.addEventListener('click', () => {
-  if (!currentUser || users[currentUser]?.role !== 'admin') {
-    alert("Unauthorized command execution.");
-    return;
+  if (ads.length === initialLength) {
+    return res.status(404).json({ error: 'Advertisement not found.' });
   }
 
-  const input = adminCmdInput.value.trim();
-  if (!input) return;
+  res.json({ success: true, message: 'Advertisement deleted successfully.' });
+});
 
-  // Command 1: ban [username]
-  if (input.toLowerCase().startsWith('ban ')) {
-    const targetUser = input.substring(4).trim();
-    if (users[targetUser]) {
-      users[targetUser].isBanned = true;
-      users[targetUser].isLoggedIn = false;
-      message.style.color = "green";
-      message.innerText = `User [${targetUser}] has been permanently banned across all games.`;
-      addChatMessage("System", null, `${targetUser} was banned from Usublox by Admin.`);
-    } else {
-      message.style.color = "red";
-      message.innerText = `User [${targetUser}] does not exist.`;
-    }
-  }
+// Server Route Handler with No-Cache Headers
+app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 
-  // Command 2: kick [username]
-  else if (input.toLowerCase().startsWith('kick ')) {
-    const targetUser = input.substring(5).trim();
-    if (users[targetUser]) {
-      if (users[targetUser].isLoggedIn) {
-        users[targetUser].isLoggedIn = false;
-        
-        if (targetUser === currentUser) {
-          logoutUser("You were kicked from the server.");
-        } else {
-          message.style.color = "green";
-          message.innerText = `User [${targetUser}] was kicked from the session.`;
-          addChatMessage("System", null, `${targetUser} was kicked from the server.`);
-        }
-      } else {
-        message.style.color = "orange";
-        message.innerText = `User [${targetUser}] is not currently online.`;
-      }
-    } else {
-      message.style.color = "red";
-      message.innerText = `User [${targetUser}] does not exist.`;
-    }
-  }
+  const rootIndex = path.join(__dirname, 'index.html');
+  const publicIndex = path.join(__dirname, 'public', 'index.html');
 
-  // Command 3: message as [username] to [username] [text]
-  else if (input.toLowerCase().startsWith('message as ')) {
-    // Regex matches: message as <sender> to <recipient> <text>
-    const regex = /^message as (\S+) to (\S+) (.+)$/i;
-    const match = input.match(regex);
+  if (fs.existsSync(rootIndex)) return res.sendFile(rootIndex);
+  if (fs.existsSync(publicIndex)) return res.sendFile(publicIndex);
 
-    if (match) {
-      const sender = match[1];
-      const recipient = match[2];
-      const text = match[3];
+  res.status(404).send('index.html missing');
+});
 
-      addChatMessage(sender, recipient, text);
-      message.style.color = "green";
-      message.innerText = `Dispatched spoofed message as [${sender}] to [${recipient}].`;
-    } else {
-      message.style.color = "red";
-      message.innerText = "Syntax Error! Use: message as [sender] to [recipient] [message]";
-    }
-  } else {
-    message.style.color = "red";
-    message.innerText = "Unknown admin command.";
-  }
-
-  adminCmdInput.value = '';
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
