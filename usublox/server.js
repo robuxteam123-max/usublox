@@ -9,40 +9,49 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// User storage (persists while application is running)
+// Server-side memory storage for registered users
 const users = {};
 
-// Account Sign-Up Endpoint
+// Register API
 app.post('/api/signup', (req, res) => {
   const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required.' });
+  if (!username || !password || typeof username !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Valid username and password required.' });
   }
 
-  const key = username.toLowerCase();
+  const key = username.toLowerCase().trim();
   if (users[key]) {
     return res.status(400).json({ error: 'Username already taken.' });
   }
 
-  users[key] = { username, password };
-  res.json({ success: true, username });
+  users[key] = { username: username.trim(), password: String(password) };
+  return res.json({ success: true, username: users[key].username });
 });
 
-// Account Login Endpoint (Strict Password Verification)
+// Strict Login Verification API
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  const key = username ? username.toLowerCase() : '';
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password required.' });
+  }
+
+  const key = username.toLowerCase().trim();
   const user = users[key];
 
-  if (!user || user.password !== password) {
+  // Block login if user does not exist OR password does not match exactly
+  if (!user || user.password !== String(password)) {
     return res.status(401).json({ error: 'Invalid username or password.' });
   }
 
-  res.json({ success: true, username: user.username });
+  return res.json({ success: true, username: user.username });
 });
 
-// Catch-all route to serve lowercase index.html
+// Route handler with anti-caching headers
 app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const rootIndex = path.join(__dirname, 'index.html');
   const publicIndex = path.join(__dirname, 'public', 'index.html');
 
