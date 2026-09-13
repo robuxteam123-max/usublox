@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Usublox</title>
+</head>
+<body style="font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 10px;">
+
+  <h1 style="text-align: center;">Usublox</h1>
+
+  <!-- Auth Screen -->
+  <div id="auth-box">
+    <h3>Sign Up / Sign In</h3>
+    <input type="text" id="username" placeholder="Username" style="display: block; width: 100%; margin: 8px 0; padding: 8px; box-sizing: border-box;"><br>
+    <input type="password" id="password" placeholder="Password" style="display: block; width: 100%; margin: 8px 0; padding: 8px; box-sizing: border-box;"><br>
+    <button id="signup-btn" style="padding: 8px 16px;">Sign Up</button>
+    <button id="signin-btn" style="padding: 8px 16px;">Sign In</button>
+  </div>
+
+  <!-- Signed-In Dashboard -->
+  <div id="user-dashboard" style="display: none; border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
+    <h2 id="signed-in-text"></h2>
+    
+    <!-- Admin Command Panel -->
+    <div id="admin-panel" style="display: none; border: 2px red solid; padding: 10px; margin: 15px 0; background: #fff0f0;">
+      <h3 style="color: red; margin-top: 0;">GLOBAL ADMIN CONSOLE (Applies to All Games)</h3>
+      <p style="font-size: 12px; color: #555;">Command Syntax:<br>
+        <code>ban [username]</code><br>
+        <code>kick [username]</code><br>
+        <code>message as [sender] to [recipient] [message]</code>
+      </p>
+      <input type="text" id="admin-cmd" placeholder="Enter command..." style="width: 70%; padding: 6px;">
+      <button id="run-cmd-btn" style="padding: 6px 12px; background: red; color: white; border: none; cursor: pointer;">Execute</button>
+    </div>
+
+    <!-- Games Hub -->
+    <div style="margin: 15px 0; border: 1px solid #ddd; padding: 10px;">
+      <h3>Usublox Games Hub</h3>
+      <button onclick="playGame('Blox World')">Play Blox World</button>
+      <button onclick="playGame('Obby Run')">Play Obby Run</button>
+      <div id="game-view" style="margin-top: 10px; padding: 10px; background: #f9f9f9; display: none;"></div>
+    </div>
+
+    <!-- Global Chat Feed -->
+    <h3>Global Server Feed</h3>
+    <div id="chat-box" style="border: 1px solid #aaa; height: 120px; overflow-y: scroll; padding: 8px; background: #fafafa; font-size: 14px;"></div>
+
+    <br>
+    <button id="signout-btn" style="padding: 6px 12px;">Sign Out</button>
+  </div>
+
+  <p id="message" style="margin-top: 15px; color: darkred; font-weight: bold;"></p>
+
+  <script src="script.js"></script>
+</body>
+</html>
