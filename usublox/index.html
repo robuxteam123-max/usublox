@@ -20,9 +20,10 @@
       padding: 10px;
     }
 
+    /* Navigation */
     nav {
       width: 100%;
-      max-width: 800px;
+      max-width: 850px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -35,6 +36,7 @@
     .logo { color: #ff4757; font-weight: bold; font-size: 1.3rem; letter-spacing: 1px; }
     .nav-actions { display: flex; align-items: center; gap: 8px; }
 
+    /* Device Mode Switcher */
     .device-switcher {
       display: flex;
       background: #14171d;
@@ -53,6 +55,16 @@
       cursor: pointer;
     }
     .device-btn.active { background: #ff4757; color: white; font-weight: bold; }
+
+    /* Layout Wrapper */
+    #main-container {
+      width: 100%;
+      max-width: 850px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
 
     #game-wrapper {
       width: 100%;
@@ -82,6 +94,7 @@
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
     }
     button:hover, button.active { background-color: #ff4757; border-color: #ff6b81; }
 
@@ -96,6 +109,7 @@
     }
     canvas { width: 100%; height: 100%; display: block; }
 
+    /* Touch Controls */
     #touch-controls {
       display: none;
       margin-top: 15px;
@@ -128,28 +142,62 @@
       border: 1px solid #2f3542;
       font-size: 0.9rem;
     }
-    .admin-section {
-      margin-top: 15px;
-      width: 100%;
-      background: #14171d;
-      border: 1px dashed #ff4757;
-      padding: 12px;
-      border-radius: 8px;
-    }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #2f3542;
-      background: #0f1117;
-      color: #fff;
-      margin-bottom: 8px;
-    }
 
+    /* Advertisements System Styles */
+    .ads-section {
+      width: 100%;
+      background: #1e272e;
+      border: 1px solid #2f3542;
+      border-radius: 10px;
+      padding: 15px;
+    }
+    .ads-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #2f3542;
+      padding-bottom: 8px;
+    }
+    .ads-title { color: #ffa502; font-size: 1rem; font-weight: bold; }
+    .ads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .ad-card {
+      background: #14171d;
+      border: 1px solid #2f3542;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .ad-card-top { display: flex; align-items: center; gap: 10px; }
+    .ad-icon { font-size: 1.8rem; background: #2f3542; padding: 6px 10px; border-radius: 8px; }
+    .ad-info { flex: 1; }
+    .ad-heading { color: #ffffff; font-size: 0.95rem; font-weight: bold; }
+    .ad-desc { color: #a4b0be; font-size: 0.8rem; line-height: 1.3; margin-top: 4px; }
+    .ad-link-btn {
+      display: inline-block;
+      text-align: center;
+      background: #ff4757;
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .ad-link-btn:hover { background: #ff6b81; }
+
+    /* Modal Overlay & Styling */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.88);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -160,15 +208,60 @@
       border: 2px solid #ff4757;
       padding: 20px;
       border-radius: 10px;
-      width: 90%;
-      max-width: 380px;
+      width: 92%;
+      max-width: 550px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .tab-header { display: flex; gap: 10px; margin-bottom: 15px; }
-    .tab-btn { flex: 1; background: #0f1117; border: none; padding: 8px; color: #a4b0be; cursor: pointer; }
-    .tab-btn.active { background: #ff4757; color: white; }
+    .tab-btn { flex: 1; background: #0f1117; border: none; padding: 8px; color: #a4b0be; cursor: pointer; border-radius: 6px; }
+    .tab-btn.active { background: #ff4757; color: white; font-weight: bold; }
     .hidden { display: none !important; }
-    .update-list { text-align: left; margin: 15px 0; line-height: 1.8; list-style: none; }
-    .update-list li { color: #f1f2f6; font-size: 0.95rem; }
+
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #2f3542;
+      background: #0f1117;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    /* Admin Panel Tables & Control List */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    .admin-table th, .admin-table td {
+      border: 1px solid #2f3542;
+      padding: 8px;
+      text-align: left;
+    }
+    .admin-table th { background: #14171d; color: #ff6b81; }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .badge-active { background: #2ed573; color: #000; }
+    .badge-muted { background: #ffa502; color: #000; }
+    .badge-banned { background: #ff4757; color: #fff; }
+
+    .action-btn {
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+    .btn-ban { background: #ff4757; border-color: #ff6b81; }
+    .btn-mute { background: #eccc68; color: #000; border-color: #ffa502; }
+    .btn-kick { background: #70a1ff; border-color: #1e90ff; }
+    .btn-success { background: #2ed573; border-color: #2ed573; color: #000; }
   </style>
 </head>
 <body class="mode-auto">
@@ -177,6 +270,7 @@
     <div class="logo">USUBLOX <span style="font-size:0.8rem; color:#2ed573;">v2.0</span></div>
     <div class="nav-actions">
       <button onclick="openUpdatesModal()" style="background:#ff9f43; border-color:#ffa801;">See Updates</button>
+      <button onclick="openAdminModal()" style="background:#3742fa; border-color:#5352ed;">Admin Panel</button>
       <span id="user-display" style="font-size:0.85rem; color:#a4b0be;">Guest</span>
       <button id="auth-btn" onclick="openAuthModal()">Sign In</button>
     </div>
@@ -189,48 +283,113 @@
     <button class="device-btn" onclick="setDeviceMode('pc', this)">💻 PC</button>
   </div>
 
-  <div id="game-wrapper">
-    <div class="controls-bar">
-      <button id="btn-box" class="active" onclick="switchGame('box')">Box Runner</button>
-      <button id="btn-clicker" onclick="switchGame('clicker')">Target Clicker</button>
-    </div>
-
-    <div id="canvas-container">
-      <canvas id="gameCanvas" width="600" height="400"></canvas>
-    </div>
-
-    <div id="touch-controls">
-      <div></div>
-      <div class="touch-btn" id="t-up">▲</div>
-      <div></div>
-      <div class="touch-btn" id="t-left">◄</div>
-      <div class="touch-btn" id="t-down">▼</div>
-      <div class="touch-btn" id="t-right">►</div>
-    </div>
-
-    <div class="info-panel">
-      <span><strong>Mode:</strong> <span id="mode-text">Box Runner</span></span>
-      <span><strong>Score:</strong> <span id="score-text" style="color: #2ed573;">0</span></span>
-    </div>
-
-    <div class="admin-section">
-      <h3 style="color:#ff6b81; font-size: 0.9rem; margin-bottom: 6px;">Admin Console</h3>
-      <div style="display:flex; gap:6px;">
-        <input type="text" id="admin-key" placeholder="Enter key (e.g. usuthebanna)" style="margin:0;">
-        <button onclick="verifyAdmin()">Auth</button>
+  <div id="main-container">
+    <div id="game-wrapper">
+      <div class="controls-bar">
+        <button id="btn-box" class="active" onclick="switchGame('box')">Box Runner</button>
+        <button id="btn-clicker" onclick="switchGame('clicker')">Target Clicker</button>
       </div>
-      <div id="admin-output" style="font-size:0.8rem; margin-top:5px;"></div>
+
+      <div id="canvas-container">
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+      </div>
+
+      <div id="touch-controls">
+        <div></div>
+        <div class="touch-btn" id="t-up">▲</div>
+        <div></div>
+        <div class="touch-btn" id="t-left">◄</div>
+        <div class="touch-btn" id="t-down">▼</div>
+        <div class="touch-btn" id="t-right">►</div>
+      </div>
+
+      <div class="info-panel">
+        <span><strong>Mode:</strong> <span id="mode-text">Box Runner</span></span>
+        <span><strong>Score:</strong> <span id="score-text" style="color: #2ed573;">0</span></span>
+      </div>
+    </div>
+
+    <!-- Advertisements System View -->
+    <div class="ads-section">
+      <div class="ads-header">
+        <span class="ads-title">📢 Featured Advertisements</span>
+        <span style="font-size:0.75rem; color:#a4b0be;">Sponsored Content</span>
+      </div>
+      <div id="ads-grid" class="ads-grid">
+        <div style="color:#a4b0be; font-size:0.85rem;">Loading advertisements...</div>
+      </div>
     </div>
   </div>
 
-  <!-- Update 2.0 Modal -->
-  <div id="updates-modal" class="modal-overlay hidden">
+  <!-- Admin Panel Modal -->
+  <div id="admin-modal" class="modal-overlay hidden">
     <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="color: #ff4757;">Admin Control Center</h2>
+        <button onclick="closeAdminModal()" style="background:#0f1117; border:none; padding:4px 10px;">✕ Close</button>
+      </div>
+
+      <!-- Key Login Form -->
+      <div id="admin-login-view">
+        <p style="font-size:0.85rem; color:#a4b0be; margin-bottom:10px;">Enter Admin Key to access user and advertisement controls.</p>
+        <input type="password" id="admin-key-input" placeholder="Admin Key (e.g. usuadminpowers)">
+        <button style="width:100%; background:#2ed573; color:#000;" onclick="authenticateAdmin()">Authenticate Admin</button>
+      </div>
+
+      <!-- Authenticated Admin Dashboard -->
+      <div id="admin-dashboard-view" class="hidden">
+        <div class="tab-header">
+          <button id="adm-tab-users" class="tab-btn active" onclick="switchAdminTab('users')">Manage Users</button>
+          <button id="adm-tab-ads" class="tab-btn" onclick="switchAdminTab('ads')">Manage Ads</button>
+        </div>
+
+        <!-- User Controls Tab -->
+        <div id="adm-sec-users">
+          <h4 style="color:#2ed573; margin-bottom:6px;">Registered Users</h4>
+          <div style="max-height:220px; overflow-y:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-user-list">
+                <tr><td colspan="3">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Ads Controls Tab -->
+        <div id="adm-sec-ads" class="hidden">
+          <h4 style="color:#ffa502; margin-bottom:6px;">Create / Edit Advertisement</h4>
+          <input type="text" id="ad-title" placeholder="Ad Title (e.g. Channel Name)">
+          <textarea id="ad-desc" placeholder="Ad Description" rows="2"></textarea>
+          <input type="text" id="ad-url" placeholder="Clickable Link URL (https://...)">
+          <input type="text" id="ad-icon" placeholder="Icon Emoji (e.g. 📺 or 🎯)">
+          <button style="width:100%; margin-bottom:15px; background:#2ed573; color:#000;" onclick="saveAd()">Add Advertisement</button>
+
+          <h4 style="color:#ff6b81; margin-bottom:6px;">Existing Advertisements</h4>
+          <div style="max-height:180px; overflow-y:auto;" id="admin-ads-list">
+            Loading advertisements...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Modal -->
+  <div id="updates-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:380px;">
       <h2 style="color: #ff4757; text-align: center;">Update 2.0 Notes</h2>
-      <ul class="update-list">
+      <ul style="text-align: left; margin: 15px 0; line-height: 1.8; list-style: none;">
         <li>- Login Password System Fixed</li>
         <li>- Added Games</li>
         <li>- Made mobile and tablet playable</li>
+        <li>- Fully Functional Admin Panel Added</li>
+        <li>- Dynamic Advertisements System Integrated</li>
       </ul>
       <button style="width: 100%; background: #ff4757;" onclick="closeUpdatesModal()">Close</button>
     </div>
@@ -238,7 +397,7 @@
 
   <!-- Auth Modal -->
   <div id="auth-modal" class="modal-overlay hidden">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width:380px;">
       <div class="tab-header">
         <button id="tab-signin" class="tab-btn active" onclick="switchAuthTab('signin')">Sign In</button>
         <button id="tab-signup" class="tab-btn" onclick="switchAuthTab('signup')">Sign Up</button>
@@ -261,6 +420,7 @@
   </div>
 
   <script>
+    // Canvas & Game Variables
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreText = document.getElementById('score-text');
@@ -270,6 +430,7 @@
     let currentGame = 'box';
     let score = 0;
     let currentUser = localStorage.getItem('usublox_user') || null;
+    let currentAdminKey = localStorage.getItem('usublox_admin_key') || null;
 
     let player = { x: 285, y: 185, size: 30, speed: 5, color: '#00d2d3' };
     let coin = { x: 100, y: 100, size: 18, color: '#ffa502' };
@@ -365,6 +526,7 @@
       requestAnimationFrame(update);
     }
 
+    // Modal Control Functions
     function openUpdatesModal() { document.getElementById('updates-modal').classList.remove('hidden'); }
     function closeUpdatesModal() { document.getElementById('updates-modal').classList.add('hidden'); }
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
@@ -377,10 +539,10 @@
       document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
     }
 
+    // User Authentication
     async function handleSignIn() {
       const username = document.getElementById('signin-user').value.trim();
       const password = document.getElementById('signin-pass').value;
-
       if (!username || !password) return alert('Enter username and password');
 
       try {
@@ -389,27 +551,22 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-
         const data = await res.json();
 
-        if (res.status !== 200 || !data.success) {
-          alert(data.error || 'Invalid login details.');
-          return;
-        }
+        if (!res.ok) return alert(data.error || 'Login failed');
 
         currentUser = data.username;
         localStorage.setItem('usublox_user', currentUser);
         updateUserUI();
         closeAuthModal();
       } catch (err) {
-        alert('Server unreachable. Ensure Node.js server is active.');
+        alert('Server unreachable.');
       }
     }
 
     async function handleSignUp() {
       const username = document.getElementById('signup-user').value.trim();
       const password = document.getElementById('signup-pass').value;
-
       if (!username || !password) return alert('Choose username and password');
 
       try {
@@ -418,20 +575,16 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-
         const data = await res.json();
 
-        if (res.status !== 200 || !data.success) {
-          alert(data.error || 'Sign up failed.');
-          return;
-        }
+        if (!res.ok) return alert(data.error || 'Sign up failed');
 
         currentUser = data.username;
         localStorage.setItem('usublox_user', currentUser);
         updateUserUI();
         closeAuthModal();
       } catch (err) {
-        alert('Server unreachable. Ensure Node.js server is active.');
+        alert('Server unreachable.');
       }
     }
 
@@ -451,19 +604,265 @@
       }
     }
 
-    function verifyAdmin() {
-      const val = document.getElementById('admin-key').value.trim();
-      const output = document.getElementById('admin-output');
-      if (val.toLowerCase() === 'usuthebanna') {
-        output.style.color = '#2ed573';
-        output.innerText = '✓ Admin Access Granted: usuthebanna permissions active.';
-      } else {
-        output.style.color = '#ff4757';
-        output.innerText = '✗ Invalid Admin Key.';
+    // ----------------- PUBLIC ADVERTISEMENTS SYSTEM ----------------- //
+
+    async function fetchPublicAds() {
+      const grid = document.getElementById('ads-grid');
+      try {
+        const res = await fetch('/api/ads');
+        const data = await res.json();
+
+        if (!data.success || !data.ads.length) {
+          grid.innerHTML = '<div style="color:#a4b0be; font-size:0.85rem;">No active advertisements available.</div>';
+          return;
+        }
+
+        grid.innerHTML = data.ads.map(ad => `
+          <div class="ad-card">
+            <div class="ad-card-top">
+              <div class="ad-icon">${ad.icon || '📢'}</div>
+              <div class="ad-info">
+                <div class="ad-heading">${escapeHtml(ad.title)}</div>
+                <div class="ad-desc">${escapeHtml(ad.description)}</div>
+              </div>
+            </div>
+            <a href="${escapeHtml(ad.url)}" target="_blank" class="ad-link-btn">Visit Link ↗</a>
+          </div>
+        `).join('');
+      } catch (err) {
+        grid.innerHTML = '<div style="color:#ff4757; font-size:0.85rem;">Failed to load advertisements.</div>';
       }
     }
 
+    // ----------------- ADMIN PANEL SYSTEM ----------------- //
+
+    function openAdminModal() {
+      document.getElementById('admin-modal').classList.remove('hidden');
+      if (currentAdminKey) {
+        verifyAdminSession();
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.add('hidden');
+    }
+
+    async function authenticateAdmin() {
+      const key = document.getElementById('admin-key-input').value.trim();
+      if (!key) return alert('Please enter an admin key.');
+
+      try {
+        const res = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': key }
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Authentication failed.');
+
+        currentAdminKey = key;
+        localStorage.setItem('usublox_admin_key', key);
+        showAdminDashboard();
+      } catch (err) {
+        alert('Server unreachable.');
+      }
+    }
+
+    async function verifyAdminSession() {
+      try {
+        const res = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': currentAdminKey }
+        });
+        if (res.ok) {
+          showAdminDashboard();
+        } else {
+          localStorage.removeItem('usublox_admin_key');
+          currentAdminKey = null;
+        }
+      } catch (err) {}
+    }
+
+    function showAdminDashboard() {
+      document.getElementById('admin-login-view').classList.add('hidden');
+      document.getElementById('admin-dashboard-view').classList.remove('hidden');
+      fetchAdminUsers();
+      fetchAdminAds();
+    }
+
+    function switchAdminTab(sec) {
+      document.getElementById('adm-tab-users').classList.toggle('active', sec === 'users');
+      document.getElementById('adm-tab-ads').classList.toggle('active', sec === 'ads');
+      document.getElementById('adm-sec-users').classList.toggle('hidden', sec !== 'users');
+      document.getElementById('adm-sec-ads').classList.toggle('hidden', sec !== 'ads');
+    }
+
+    // Admin User Controls: Ban, Kick, Mute, Unban
+    async function fetchAdminUsers() {
+      const tbody = document.getElementById('admin-user-list');
+      try {
+        const res = await fetch('/api/admin/users', {
+          headers: { 'x-admin-key': currentAdminKey }
+        });
+        const data = await res.json();
+
+        if (!data.success || !data.users.length) {
+          tbody.innerHTML = '<tr><td colspan="3">No registered users found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.users.map(u => `
+          <tr>
+            <td><strong>${escapeHtml(u.username)}</strong></td>
+            <td><span class="badge badge-${u.status}">${u.status.toUpperCase()}</span></td>
+            <td>
+              ${u.status === 'banned'
+                ? `<button class="action-btn btn-success" onclick="performUserAction('${u.username}', 'unban')">Unban</button>`
+                : `<button class="action-btn btn-ban" onclick="performUserAction('${u.username}', 'ban')">Ban</button>`
+              }
+              ${u.status === 'muted'
+                ? `<button class="action-btn btn-success" onclick="performUserAction('${u.username}', 'unmute')">Unmute</button>`
+                : `<button class="action-btn btn-mute" onclick="performUserAction('${u.username}', 'mute')">Mute</button>`
+              }
+              <button class="action-btn btn-kick" onclick="performUserAction('${u.username}', 'kick')">Kick</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="3">Error loading users.</td></tr>';
+      }
+    }
+
+    async function performUserAction(targetUser, action) {
+      if (!confirm(`Are you sure you want to ${action.toUpperCase()} user '${targetUser}'?`)) return;
+
+      try {
+        const res = await fetch('/api/admin/users/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': currentAdminKey },
+          body: JSON.stringify({ targetUser, action })
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Action failed.');
+
+        alert(data.message);
+        fetchAdminUsers();
+      } catch (err) {
+        alert('Server unreachable.');
+      }
+    }
+
+    // Admin Ads Controls: Create, Toggle Active, Delete
+    async function fetchAdminAds() {
+      const list = document.getElementById('admin-ads-list');
+      try {
+        const res = await fetch('/api/admin/ads', {
+          headers: { 'x-admin-key': currentAdminKey }
+        });
+        const data = await res.json();
+
+        if (!data.success || !data.ads.length) {
+          list.innerHTML = '<div style="color:#a4b0be; font-size:0.85rem;">No advertisements created.</div>';
+          return;
+        }
+
+        list.innerHTML = data.ads.map(a => `
+          <div style="background:#14171d; border:1px solid #2f3542; padding:8px; border-radius:6px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong style="font-size:0.85rem;">${a.icon || '📢'} ${escapeHtml(a.title)}</strong>
+              <span class="badge badge-${a.active ? 'active' : 'banned'}">${a.active ? 'ACTIVE' : 'INACTIVE'}</span>
+            </div>
+            <div>
+              <button class="action-btn ${a.active ? 'btn-mute' : 'btn-success'}" onclick="toggleAdStatus('${a.id}', ${!a.active})">
+                ${a.active ? 'Deactivate' : 'Activate'}
+              </button>
+              <button class="action-btn btn-ban" onclick="deleteAd('${a.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = '<div style="color:#ff4757; font-size:0.85rem;">Failed to load admin advertisements.</div>';
+      }
+    }
+
+    async function saveAd() {
+      const title = document.getElementById('ad-title').value.trim();
+      const description = document.getElementById('ad-desc').value.trim();
+      const url = document.getElementById('ad-url').value.trim();
+      const icon = document.getElementById('ad-icon').value.trim();
+
+      if (!title || !description || !url) {
+        return alert('Please fill in title, description, and link URL.');
+      }
+
+      try {
+        const res = await fetch('/api/admin/ads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': currentAdminKey },
+          body: JSON.stringify({ title, description, url, icon })
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Failed to create advertisement.');
+
+        alert(data.message);
+        document.getElementById('ad-title').value = '';
+        document.getElementById('ad-desc').value = '';
+        document.getElementById('ad-url').value = '';
+        document.getElementById('ad-icon').value = '';
+
+        fetchAdminAds();
+        fetchPublicAds();
+      } catch (err) {
+        alert('Server unreachable.');
+      }
+    }
+
+    async function toggleAdStatus(id, active) {
+      try {
+        const res = await fetch(`/api/admin/ads/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': currentAdminKey },
+          body: JSON.stringify({ active })
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Failed to update ad state.');
+
+        fetchAdminAds();
+        fetchPublicAds();
+      } catch (err) {
+        alert('Server unreachable.');
+      }
+    }
+
+    async function deleteAd(id) {
+      if (!confirm('Are you sure you want to delete this advertisement?')) return;
+
+      try {
+        const res = await fetch(`/api/admin/ads/${id}`, {
+          method: 'DELETE',
+          headers: { 'x-admin-key': currentAdminKey }
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Failed to delete ad.');
+
+        fetchAdminAds();
+        fetchPublicAds();
+      } catch (err) {
+        alert('Server unreachable.');
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initialization
     updateUserUI();
+    fetchPublicAds();
     spawnCoin();
     update();
   </script>
