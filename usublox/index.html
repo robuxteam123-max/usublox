@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Usublox 2.0 - Arcade Hub</title>
   <style>
@@ -17,7 +20,6 @@
       padding: 10px;
     }
 
-    /* Navigation Bar */
     nav {
       width: 100%;
       max-width: 800px;
@@ -33,7 +35,6 @@
     .logo { color: #ff4757; font-weight: bold; font-size: 1.3rem; letter-spacing: 1px; }
     .nav-actions { display: flex; align-items: center; gap: 8px; }
 
-    /* Device Mode Switcher */
     .device-switcher {
       display: flex;
       background: #14171d;
@@ -53,7 +54,6 @@
     }
     .device-btn.active { background: #ff4757; color: white; font-weight: bold; }
 
-    /* Layout Wrapper */
     #game-wrapper {
       width: 100%;
       max-width: 600px;
@@ -85,7 +85,6 @@
     }
     button:hover, button.active { background-color: #ff4757; border-color: #ff6b81; }
 
-    /* Game Canvas */
     #canvas-container {
       position: relative;
       width: 100%;
@@ -97,7 +96,6 @@
     }
     canvas { width: 100%; height: 100%; display: block; }
 
-    /* Touch Controls */
     #touch-controls {
       display: none;
       margin-top: 15px;
@@ -148,7 +146,6 @@
       margin-bottom: 8px;
     }
 
-    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -185,7 +182,6 @@
     </div>
   </nav>
 
-  <!-- Device Switcher -->
   <div class="device-switcher">
     <button class="device-btn active" onclick="setDeviceMode('auto', this)">Auto</button>
     <button class="device-btn" onclick="setDeviceMode('mobile', this)">📱 Mobile</button>
@@ -203,7 +199,6 @@
       <canvas id="gameCanvas" width="600" height="400"></canvas>
     </div>
 
-    <!-- On-screen Touch Controls -->
     <div id="touch-controls">
       <div></div>
       <div class="touch-btn" id="t-up">▲</div>
@@ -370,7 +365,6 @@
       requestAnimationFrame(update);
     }
 
-    // Modal Control Functions
     function openUpdatesModal() { document.getElementById('updates-modal').classList.remove('hidden'); }
     function closeUpdatesModal() { document.getElementById('updates-modal').classList.add('hidden'); }
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
@@ -386,6 +380,7 @@
     async function handleSignIn() {
       const username = document.getElementById('signin-user').value.trim();
       const password = document.getElementById('signin-pass').value;
+
       if (!username || !password) return alert('Enter username and password');
 
       try {
@@ -394,22 +389,27 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
+
         const data = await res.json();
 
-        if (!res.ok) return alert(data.error || 'Login failed');
+        if (res.status !== 200 || !data.success) {
+          alert(data.error || 'Invalid login details.');
+          return;
+        }
 
         currentUser = data.username;
         localStorage.setItem('usublox_user', currentUser);
         updateUserUI();
         closeAuthModal();
       } catch (err) {
-        alert('Server error while logging in.');
+        alert('Server unreachable. Ensure Node.js server is active.');
       }
     }
 
     async function handleSignUp() {
       const username = document.getElementById('signup-user').value.trim();
       const password = document.getElementById('signup-pass').value;
+
       if (!username || !password) return alert('Choose username and password');
 
       try {
@@ -418,16 +418,20 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
+
         const data = await res.json();
 
-        if (!res.ok) return alert(data.error || 'Sign up failed');
+        if (res.status !== 200 || !data.success) {
+          alert(data.error || 'Sign up failed.');
+          return;
+        }
 
         currentUser = data.username;
         localStorage.setItem('usublox_user', currentUser);
         updateUserUI();
         closeAuthModal();
       } catch (err) {
-        alert('Server error while signing up.');
+        alert('Server unreachable. Ensure Node.js server is active.');
       }
     }
 
@@ -455,7 +459,7 @@
         output.innerText = '✓ Admin Access Granted: usuthebanna permissions active.';
       } else {
         output.style.color = '#ff4757';
-        output.innerText = '✗ Invalid Admin Key or User.';
+        output.innerText = '✗ Invalid Admin Key.';
       }
     }
 
