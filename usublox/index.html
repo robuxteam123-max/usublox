@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Usublox - Playable Web Hub</title>
+  <title>Usublox 2.0 - Arcade Hub</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
     body {
@@ -17,7 +17,7 @@
       padding: 10px;
     }
 
-    /* Navbar & Auth Header */
+    /* Navigation Bar */
     nav {
       width: 100%;
       max-width: 800px;
@@ -30,8 +30,8 @@
       margin-bottom: 12px;
       border: 1px solid #2f3542;
     }
-    .logo { color: #ff4757; font-weight: bold; font-size: 1.4rem; letter-spacing: 1px; }
-    .user-info { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+    .logo { color: #ff4757; font-weight: bold; font-size: 1.3rem; letter-spacing: 1px; }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
 
     /* Device Mode Switcher */
     .device-switcher {
@@ -53,7 +53,7 @@
     }
     .device-btn.active { background: #ff4757; color: white; font-weight: bold; }
 
-    /* Main Container Views */
+    /* Layout Wrapper */
     #game-wrapper {
       width: 100%;
       max-width: 600px;
@@ -62,7 +62,6 @@
       align-items: center;
       transition: all 0.3s ease;
     }
-    /* Mode Overrides */
     .mode-mobile #game-wrapper { max-width: 360px; }
     .mode-tablet #game-wrapper { max-width: 500px; }
     .mode-pc #game-wrapper { max-width: 650px; }
@@ -86,7 +85,7 @@
     }
     button:hover, button.active { background-color: #ff4757; border-color: #ff6b81; }
 
-    /* Responsive Canvas Container */
+    /* Game Canvas */
     #canvas-container {
       position: relative;
       width: 100%;
@@ -98,7 +97,7 @@
     }
     canvas { width: 100%; height: 100%; display: block; }
 
-    /* Touch Controls for Phone/Tablet */
+    /* Touch Controls */
     #touch-controls {
       display: none;
       margin-top: 15px;
@@ -120,7 +119,6 @@
     }
     .touch-btn:active { background: #ff4757; }
 
-    /* Info & Admin Panel */
     .info-panel {
       margin-top: 10px;
       background: #1e272e;
@@ -150,7 +148,7 @@
       margin-bottom: 8px;
     }
 
-    /* Auth Modal Overlay */
+    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -166,25 +164,28 @@
       padding: 20px;
       border-radius: 10px;
       width: 90%;
-      max-width: 360px;
+      max-width: 380px;
     }
     .tab-header { display: flex; gap: 10px; margin-bottom: 15px; }
     .tab-btn { flex: 1; background: #0f1117; border: none; padding: 8px; color: #a4b0be; cursor: pointer; }
     .tab-btn.active { background: #ff4757; color: white; }
     .hidden { display: none !important; }
+    .update-list { text-align: left; margin: 15px 0; line-height: 1.8; list-style: none; }
+    .update-list li { color: #f1f2f6; font-size: 0.95rem; }
   </style>
 </head>
 <body class="mode-auto">
 
   <nav>
-    <div class="logo">USUBLOX</div>
-    <div class="user-info">
-      <span id="user-display">Guest</span>
+    <div class="logo">USUBLOX <span style="font-size:0.8rem; color:#2ed573;">v2.0</span></div>
+    <div class="nav-actions">
+      <button onclick="openUpdatesModal()" style="background:#ff9f43; border-color:#ffa801;">See Updates</button>
+      <span id="user-display" style="font-size:0.85rem; color:#a4b0be;">Guest</span>
       <button id="auth-btn" onclick="openAuthModal()">Sign In</button>
     </div>
   </nav>
 
-  <!-- Device Switcher Bar -->
+  <!-- Device Switcher -->
   <div class="device-switcher">
     <button class="device-btn active" onclick="setDeviceMode('auto', this)">Auto</button>
     <button class="device-btn" onclick="setDeviceMode('mobile', this)">📱 Mobile</button>
@@ -202,7 +203,7 @@
       <canvas id="gameCanvas" width="600" height="400"></canvas>
     </div>
 
-    <!-- On-screen Touch Controls for Phone & Tablet -->
+    <!-- On-screen Touch Controls -->
     <div id="touch-controls">
       <div></div>
       <div class="touch-btn" id="t-up">▲</div>
@@ -227,7 +228,20 @@
     </div>
   </div>
 
-  <!-- Sign In / Sign Up Modal -->
+  <!-- Update 2.0 Modal -->
+  <div id="updates-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2 style="color: #ff4757; text-align: center;">Update 2.0 Notes</h2>
+      <ul class="update-list">
+        <li>- Login Password System Fixed</li>
+        <li>- Added Games</li>
+        <li>- Made mobile and tablet playable</li>
+      </ul>
+      <button style="width: 100%; background: #ff4757;" onclick="closeUpdatesModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
   <div id="auth-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="tab-header">
@@ -267,17 +281,12 @@
     let enemy = { x: 400, y: 50, size: 24, speedX: 3, speedY: 3, color: '#ff4757' };
     let keys = {};
 
-    // Auto-detect mobile devices
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
-    if (isMobile) {
-      touchControls.style.display = 'grid';
-    }
+    if (isMobile) touchControls.style.display = 'grid';
 
-    // Key Listeners
     window.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);
     window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
 
-    // Touch D-Pad Controls
     const bindTouch = (id, key) => {
       const el = document.getElementById(id);
       el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
@@ -290,26 +299,18 @@
     bindTouch('t-left', 'a');
     bindTouch('t-right', 'd');
 
-    // Device Mode Switcher (Auto, Mobile, Tablet, PC)
     function setDeviceMode(mode, btn) {
       document.body.className = 'mode-' + mode;
       document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      if (mode === 'mobile' || (mode === 'auto' && isMobile)) {
-        touchControls.style.display = 'grid';
-      } else {
-        touchControls.style.display = (mode === 'pc') ? 'none' : 'grid';
-      }
+      touchControls.style.display = (mode === 'pc') ? 'none' : 'grid';
     }
 
-    // Canvas Tap/Click Handler
     canvas.addEventListener('click', (e) => {
       if (currentGame !== 'clicker') return;
       const rect = canvas.getBoundingClientRect();
       const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
       const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
-
       const dist = Math.hypot(clickX - coin.x, clickY - coin.y);
       if (dist < coin.size + 15) {
         score += 5;
@@ -342,12 +343,10 @@
         if (keys['a'] || keys['arrowleft']) player.x = Math.max(0, player.x - player.speed);
         if (keys['d'] || keys['arrowright']) player.x = Math.min(canvas.width - player.size, player.x + player.speed);
 
-        // Bouncing Enemy
         enemy.x += enemy.speedX; enemy.y += enemy.speedY;
         if (enemy.x <= 0 || enemy.x + enemy.size >= canvas.width) enemy.speedX *= -1;
         if (enemy.y <= 0 || enemy.y + enemy.size >= canvas.height) enemy.speedY *= -1;
 
-        // Collision Check
         if (player.x < coin.x + coin.size && player.x + player.size > coin.x &&
             player.y < coin.y + coin.size && player.y + player.size > coin.y) {
           score += 10;
@@ -360,7 +359,6 @@
           score = 0; scoreText.innerText = score; player.x = 285; player.y = 185;
         }
 
-        // Draw Player, Enemy, Coin
         ctx.fillStyle = player.color; ctx.fillRect(player.x, player.y, player.size, player.size);
         ctx.fillStyle = enemy.color; ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
         ctx.fillStyle = coin.color; ctx.beginPath(); ctx.arc(coin.x + coin.size/2, coin.y + coin.size/2, coin.size/2, 0, Math.PI * 2); ctx.fill();
@@ -372,9 +370,12 @@
       requestAnimationFrame(update);
     }
 
-    // User Auth Logic
+    // Modal Control Functions
+    function openUpdatesModal() { document.getElementById('updates-modal').classList.remove('hidden'); }
+    function closeUpdatesModal() { document.getElementById('updates-modal').classList.add('hidden'); }
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
     function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
     function switchAuthTab(tab) {
       document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
       document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
@@ -382,22 +383,52 @@
       document.getElementById('form-signup').classList.toggle('hidden', tab !== 'signup');
     }
 
-    function handleSignIn() {
-      const u = document.getElementById('signin-user').value.trim();
-      if (!u) return alert('Enter a username');
-      currentUser = u;
-      localStorage.setItem('usublox_user', u);
-      updateUserUI();
-      closeAuthModal();
+    async function handleSignIn() {
+      const username = document.getElementById('signin-user').value.trim();
+      const password = document.getElementById('signin-pass').value;
+      if (!username || !password) return alert('Enter username and password');
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Login failed');
+
+        currentUser = data.username;
+        localStorage.setItem('usublox_user', currentUser);
+        updateUserUI();
+        closeAuthModal();
+      } catch (err) {
+        alert('Server error while logging in.');
+      }
     }
 
-    function handleSignUp() {
-      const u = document.getElementById('signup-user').value.trim();
-      if (!u) return alert('Choose a username');
-      currentUser = u;
-      localStorage.setItem('usublox_user', u);
-      updateUserUI();
-      closeAuthModal();
+    async function handleSignUp() {
+      const username = document.getElementById('signup-user').value.trim();
+      const password = document.getElementById('signup-pass').value;
+      if (!username || !password) return alert('Choose username and password');
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) return alert(data.error || 'Sign up failed');
+
+        currentUser = data.username;
+        localStorage.setItem('usublox_user', currentUser);
+        updateUserUI();
+        closeAuthModal();
+      } catch (err) {
+        alert('Server error while signing up.');
+      }
     }
 
     function updateUserUI() {
@@ -428,7 +459,6 @@
       }
     }
 
-    // Startup
     updateUserUI();
     spawnCoin();
     update();
