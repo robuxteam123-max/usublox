@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Usublox 2.0 - Arcade Hub</title>
+  <title>Usublox 2.5 - Arcade Hub & Leaderboards</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
     body {
@@ -36,7 +36,7 @@
     .logo { color: #ff4757; font-weight: bold; font-size: 1.3rem; letter-spacing: 1px; }
     .nav-actions { display: flex; align-items: center; gap: 8px; }
 
-    /* Device Mode Switcher */
+    /* Device Switcher */
     .device-switcher {
       display: flex;
       background: #14171d;
@@ -143,55 +143,75 @@
       font-size: 0.9rem;
     }
 
-    /* Advertisements System Styles */
-    .ads-section {
+    /* Leaderboard & Ads Side-by-Side Grid */
+    .content-grid {
       width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    @media (max-width: 680px) {
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    .section-card {
       background: #1e272e;
       border: 1px solid #2f3542;
       border-radius: 10px;
       padding: 15px;
     }
-    .ads-header {
+    .section-title {
+      color: #ffa502;
+      font-size: 1rem;
+      font-weight: bold;
+      border-bottom: 1px solid #2f3542;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      border-bottom: 1px solid #2f3542;
-      padding-bottom: 8px;
     }
-    .ads-title { color: #ffa502; font-size: 1rem; font-weight: bold; }
-    .ads-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
+
+    /* Leaderboards List */
+    .lb-list { list-style: none; }
+    .lb-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #14171d;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
     }
+    .lb-rank { color: #ff4757; font-weight: bold; width: 25px; }
+
+    /* Ads System Styles */
+    .ads-grid { display: flex; flex-direction: column; gap: 10px; }
     .ad-card {
       background: #14171d;
       border: 1px solid #2f3542;
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
     }
     .ad-card-top { display: flex; align-items: center; gap: 10px; }
-    .ad-icon { font-size: 1.8rem; background: #2f3542; padding: 6px 10px; border-radius: 8px; }
+    .ad-icon { font-size: 1.5rem; background: #2f3542; padding: 4px 8px; border-radius: 6px; }
     .ad-info { flex: 1; }
-    .ad-heading { color: #ffffff; font-size: 0.95rem; font-weight: bold; }
-    .ad-desc { color: #a4b0be; font-size: 0.8rem; line-height: 1.3; margin-top: 4px; }
+    .ad-heading { color: #ffffff; font-size: 0.9rem; font-weight: bold; }
+    .ad-desc { color: #a4b0be; font-size: 0.75rem; line-height: 1.2; margin-top: 2px; }
     .ad-link-btn {
       display: inline-block;
       text-align: center;
       background: #ff4757;
       color: white;
       text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
       font-weight: bold;
     }
-    .ad-link-btn:hover { background: #ff6b81; }
 
     /* Modal Overlay & Styling */
     .modal-overlay {
@@ -228,7 +248,7 @@
       margin-bottom: 10px;
     }
 
-    /* Admin Panel Tables & Control List */
+    /* Admin Panel Tables */
     .admin-table {
       width: 100%;
       border-collapse: collapse;
@@ -241,23 +261,12 @@
       text-align: left;
     }
     .admin-table th { background: #14171d; color: #ff6b81; }
-    .badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: bold;
-    }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
     .badge-active { background: #2ed573; color: #000; }
     .badge-muted { background: #ffa502; color: #000; }
     .badge-banned { background: #ff4757; color: #fff; }
 
-    .action-btn {
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      margin-right: 4px;
-      margin-bottom: 2px;
-    }
+    .action-btn { padding: 4px 8px; font-size: 0.75rem; margin-right: 4px; margin-bottom: 2px; }
     .btn-ban { background: #ff4757; border-color: #ff6b81; }
     .btn-mute { background: #eccc68; color: #000; border-color: #ffa502; }
     .btn-kick { background: #70a1ff; border-color: #1e90ff; }
@@ -267,9 +276,9 @@
 <body class="mode-auto">
 
   <nav>
-    <div class="logo">USUBLOX <span style="font-size:0.8rem; color:#2ed573;">v2.0</span></div>
+    <div class="logo">USUBLOX <span style="font-size:0.8rem; color:#2ed573;">v2.5</span></div>
     <div class="nav-actions">
-      <button onclick="openUpdatesModal()" style="background:#ff9f43; border-color:#ffa801;">See Updates</button>
+      <button onclick="openUpdatesModal()" style="background:#ff9f43; border-color:#ffa801;">Updates</button>
       <button onclick="openAdminModal()" style="background:#3742fa; border-color:#5352ed;">Admin Panel</button>
       <span id="user-display" style="font-size:0.85rem; color:#a4b0be;">Guest</span>
       <button id="auth-btn" onclick="openAuthModal()">Sign In</button>
@@ -309,14 +318,30 @@
       </div>
     </div>
 
-    <!-- Advertisements System View -->
-    <div class="ads-section">
-      <div class="ads-header">
-        <span class="ads-title">📢 Featured Advertisements</span>
-        <span style="font-size:0.75rem; color:#a4b0be;">Sponsored Content</span>
+    <!-- Leaderboards & Ads Grid -->
+    <div class="content-grid">
+      <!-- Global Leaderboard Section -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>🏆 Top Players</span>
+          <div style="display:flex; gap:4px;">
+            <button onclick="renderLeaderboard('box')" id="lb-tab-box" style="padding:2px 6px; font-size:0.75rem;" class="active">Box</button>
+            <button onclick="renderLeaderboard('clicker')" id="lb-tab-clicker" style="padding:2px 6px; font-size:0.75rem;">Clicker</button>
+          </div>
+        </div>
+        <ul id="lb-list" class="lb-list">
+          <li style="color:#a4b0be; font-size:0.85rem;">Loading scores...</li>
+        </ul>
       </div>
-      <div id="ads-grid" class="ads-grid">
-        <div style="color:#a4b0be; font-size:0.85rem;">Loading advertisements...</div>
+
+      <!-- Advertisements Section -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>📢 Advertisements</span>
+        </div>
+        <div id="ads-grid" class="ads-grid">
+          <div style="color:#a4b0be; font-size:0.85rem;">Loading ads...</div>
+        </div>
       </div>
     </div>
   </div>
@@ -329,21 +354,22 @@
         <button onclick="closeAdminModal()" style="background:#0f1117; border:none; padding:4px 10px;">✕ Close</button>
       </div>
 
-      <!-- Key Login Form -->
+      <!-- Admin Login -->
       <div id="admin-login-view">
-        <p style="font-size:0.85rem; color:#a4b0be; margin-bottom:10px;">Enter Admin Key to access user and advertisement controls.</p>
-        <input type="password" id="admin-key-input" placeholder="Admin Key (e.g. usuadminpowers)">
+        <p style="font-size:0.85rem; color:#a4b0be; margin-bottom:10px;">Enter Admin Key to access control features.</p>
+        <input type="password" id="admin-key-input" placeholder="Admin Key (usuadminpowers)">
         <button style="width:100%; background:#2ed573; color:#000;" onclick="authenticateAdmin()">Authenticate Admin</button>
       </div>
 
-      <!-- Authenticated Admin Dashboard -->
+      <!-- Admin Dashboard -->
       <div id="admin-dashboard-view" class="hidden">
         <div class="tab-header">
           <button id="adm-tab-users" class="tab-btn active" onclick="switchAdminTab('users')">Manage Users</button>
           <button id="adm-tab-ads" class="tab-btn" onclick="switchAdminTab('ads')">Manage Ads</button>
+          <button id="adm-tab-lb" class="tab-btn" onclick="switchAdminTab('lb')">Leaderboards</button>
         </div>
 
-        <!-- User Controls Tab -->
+        <!-- Users Tab -->
         <div id="adm-sec-users">
           <h4 style="color:#2ed573; margin-bottom:6px;">Registered Users</h4>
           <div style="max-height:220px; overflow-y:auto;">
@@ -362,19 +388,27 @@
           </div>
         </div>
 
-        <!-- Ads Controls Tab -->
+        <!-- Ads Tab -->
         <div id="adm-sec-ads" class="hidden">
           <h4 style="color:#ffa502; margin-bottom:6px;">Create / Edit Advertisement</h4>
-          <input type="text" id="ad-title" placeholder="Ad Title (e.g. Channel Name)">
+          <input type="text" id="ad-title" placeholder="Ad Title">
           <textarea id="ad-desc" placeholder="Ad Description" rows="2"></textarea>
-          <input type="text" id="ad-url" placeholder="Clickable Link URL (https://...)">
-          <input type="text" id="ad-icon" placeholder="Icon Emoji (e.g. 📺 or 🎯)">
+          <input type="text" id="ad-url" placeholder="Clickable Link URL">
+          <input type="text" id="ad-icon" placeholder="Icon Emoji (📺 or 🎯)">
           <button style="width:100%; margin-bottom:15px; background:#2ed573; color:#000;" onclick="saveAd()">Add Advertisement</button>
 
           <h4 style="color:#ff6b81; margin-bottom:6px;">Existing Advertisements</h4>
           <div style="max-height:180px; overflow-y:auto;" id="admin-ads-list">
             Loading advertisements...
           </div>
+        </div>
+
+        <!-- Leaderboard Admin Tab -->
+        <div id="adm-sec-lb" class="hidden">
+          <h4 style="color:#ff4757; margin-bottom:10px;">Reset Leaderboards</h4>
+          <button style="width:100%; margin-bottom:10px; background:#ff4757;" onclick="resetLeaderboard('box')">Reset Box Runner Leaderboard</button>
+          <button style="width:100%; margin-bottom:10px; background:#ff4757;" onclick="resetLeaderboard('clicker')">Reset Target Clicker Leaderboard</button>
+          <button style="width:100%; background:#2f3542;" onclick="resetLeaderboard(null)">Reset All Leaderboards</button>
         </div>
       </div>
     </div>
@@ -383,13 +417,12 @@
   <!-- Update Modal -->
   <div id="updates-modal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width:380px;">
-      <h2 style="color: #ff4757; text-align: center;">Update 2.0 Notes</h2>
+      <h2 style="color: #ff4757; text-align: center;">Update 2.5 Notes</h2>
       <ul style="text-align: left; margin: 15px 0; line-height: 1.8; list-style: none;">
-        <li>- Login Password System Fixed</li>
-        <li>- Added Games</li>
-        <li>- Made mobile and tablet playable</li>
-        <li>- Fully Functional Admin Panel Added</li>
-        <li>- Dynamic Advertisements System Integrated</li>
+        <li>- Integrated Global Leaderboards</li>
+        <li>- Automatic High Score Tracking</li>
+        <li>- Admin Leaderboard Reset Capabilities</li>
+        <li>- Functional Admin Panel & Ad System</li>
       </ul>
       <button style="width: 100%; background: #ff4757;" onclick="closeUpdatesModal()">Close</button>
     </div>
@@ -420,7 +453,6 @@
   </div>
 
   <script>
-    // Canvas & Game Variables
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const scoreText = document.getElementById('score-text');
@@ -431,6 +463,7 @@
     let score = 0;
     let currentUser = localStorage.getItem('usublox_user') || null;
     let currentAdminKey = localStorage.getItem('usublox_admin_key') || null;
+    let cachedLeaderboards = { box: [], clicker: [] };
 
     let player = { x: 285, y: 185, size: 30, speed: 5, color: '#00d2d3' };
     let coin = { x: 100, y: 100, size: 18, color: '#ffa502' };
@@ -471,6 +504,7 @@
       if (dist < coin.size + 15) {
         score += 5;
         scoreText.innerText = score;
+        submitScore(score);
         spawnCoin();
       }
     });
@@ -487,6 +521,7 @@
       document.getElementById('btn-box').classList.toggle('active', mode === 'box');
       document.getElementById('btn-clicker').classList.toggle('active', mode === 'clicker');
       modeText.innerText = mode === 'box' ? 'Box Runner' : 'Target Clicker';
+      renderLeaderboard(mode);
       spawnCoin();
     }
 
@@ -507,6 +542,7 @@
             player.y < coin.y + coin.size && player.y + player.size > coin.y) {
           score += 10;
           scoreText.innerText = score;
+          submitScore(score);
           spawnCoin();
         }
 
@@ -526,7 +562,7 @@
       requestAnimationFrame(update);
     }
 
-    // Modal Control Functions
+    // Modal Triggers
     function openUpdatesModal() { document.getElementById('updates-modal').classList.remove('hidden'); }
     function closeUpdatesModal() { document.getElementById('updates-modal').classList.add('hidden'); }
     function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
@@ -552,16 +588,13 @@
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-
         if (!res.ok) return alert(data.error || 'Login failed');
 
         currentUser = data.username;
         localStorage.setItem('usublox_user', currentUser);
         updateUserUI();
         closeAuthModal();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
     }
 
     async function handleSignUp() {
@@ -576,16 +609,13 @@
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-
         if (!res.ok) return alert(data.error || 'Sign up failed');
 
         currentUser = data.username;
         localStorage.setItem('usublox_user', currentUser);
         updateUserUI();
         closeAuthModal();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
     }
 
     function updateUserUI() {
@@ -604,16 +634,63 @@
       }
     }
 
-    // ----------------- PUBLIC ADVERTISEMENTS SYSTEM ----------------- //
+    // ----------------- LEADERBOARD SYSTEM ----------------- //
+
+    async function fetchLeaderboard() {
+      try {
+        const res = await fetch('/api/leaderboard');
+        const data = await res.json();
+        if (data.success) {
+          cachedLeaderboards = data.leaderboards;
+          renderLeaderboard(currentGame);
+        }
+      } catch (err) {}
+    }
+
+    function renderLeaderboard(mode) {
+      const listEl = document.getElementById('lb-list');
+      document.getElementById('lb-tab-box').classList.toggle('active', mode === 'box');
+      document.getElementById('lb-tab-clicker').classList.toggle('active', mode === 'clicker');
+
+      const data = cachedLeaderboards[mode] || [];
+      if (!data.length) {
+        listEl.innerHTML = '<li style="color:#a4b0be; font-size:0.85rem;">No scores submitted yet.</li>';
+        return;
+      }
+
+      listEl.innerHTML = data.map((item, index) => `
+        <li class="lb-item">
+          <span><span class="lb-rank">#${index + 1}</span> ${escapeHtml(item.username)}</span>
+          <strong style="color:#2ed573;">${item.score} pts</strong>
+        </li>
+      `).join('');
+    }
+
+    async function submitScore(currentScore) {
+      if (!currentUser || currentScore <= 0) return;
+      try {
+        const res = await fetch('/api/leaderboard/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentUser, gameMode: currentGame, score: currentScore })
+        });
+        const data = await res.json();
+        if (data.success) {
+          cachedLeaderboards[currentGame] = data.leaderboard;
+          renderLeaderboard(currentGame);
+        }
+      } catch (err) {}
+    }
+
+    // ----------------- PUBLIC ADVERTISEMENTS ----------------- //
 
     async function fetchPublicAds() {
       const grid = document.getElementById('ads-grid');
       try {
         const res = await fetch('/api/ads');
         const data = await res.json();
-
         if (!data.success || !data.ads.length) {
-          grid.innerHTML = '<div style="color:#a4b0be; font-size:0.85rem;">No active advertisements available.</div>';
+          grid.innerHTML = '<div style="color:#a4b0be; font-size:0.85rem;">No active ads.</div>';
           return;
         }
 
@@ -630,17 +707,15 @@
           </div>
         `).join('');
       } catch (err) {
-        grid.innerHTML = '<div style="color:#ff4757; font-size:0.85rem;">Failed to load advertisements.</div>';
+        grid.innerHTML = '<div style="color:#ff4757; font-size:0.85rem;">Failed to load ads.</div>';
       }
     }
 
-    // ----------------- ADMIN PANEL SYSTEM ----------------- //
+    // ----------------- ADMIN DASHBOARD ----------------- //
 
     function openAdminModal() {
       document.getElementById('admin-modal').classList.remove('hidden');
-      if (currentAdminKey) {
-        verifyAdminSession();
-      }
+      if (currentAdminKey) verifyAdminSession();
     }
 
     function closeAdminModal() {
@@ -657,15 +732,12 @@
           headers: { 'Content-Type': 'application/json', 'x-admin-key': key }
         });
         const data = await res.json();
-
         if (!res.ok) return alert(data.error || 'Authentication failed.');
 
         currentAdminKey = key;
         localStorage.setItem('usublox_admin_key', key);
         showAdminDashboard();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
     }
 
     async function verifyAdminSession() {
@@ -674,9 +746,8 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-admin-key': currentAdminKey }
         });
-        if (res.ok) {
-          showAdminDashboard();
-        } else {
+        if (res.ok) showAdminDashboard();
+        else {
           localStorage.removeItem('usublox_admin_key');
           currentAdminKey = null;
         }
@@ -693,19 +764,18 @@
     function switchAdminTab(sec) {
       document.getElementById('adm-tab-users').classList.toggle('active', sec === 'users');
       document.getElementById('adm-tab-ads').classList.toggle('active', sec === 'ads');
+      document.getElementById('adm-tab-lb').classList.toggle('active', sec === 'lb');
+
       document.getElementById('adm-sec-users').classList.toggle('hidden', sec !== 'users');
       document.getElementById('adm-sec-ads').classList.toggle('hidden', sec !== 'ads');
+      document.getElementById('adm-sec-lb').classList.toggle('hidden', sec !== 'lb');
     }
 
-    // Admin User Controls: Ban, Kick, Mute, Unban
     async function fetchAdminUsers() {
       const tbody = document.getElementById('admin-user-list');
       try {
-        const res = await fetch('/api/admin/users', {
-          headers: { 'x-admin-key': currentAdminKey }
-        });
+        const res = await fetch('/api/admin/users', { headers: { 'x-admin-key': currentAdminKey } });
         const data = await res.json();
-
         if (!data.success || !data.users.length) {
           tbody.innerHTML = '<tr><td colspan="3">No registered users found.</td></tr>';
           return;
@@ -728,14 +798,11 @@
             </td>
           </tr>
         `).join('');
-      } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="3">Error loading users.</td></tr>';
-      }
+      } catch (err) { tbody.innerHTML = '<tr><td colspan="3">Error loading users.</td></tr>'; }
     }
 
     async function performUserAction(targetUser, action) {
       if (!confirm(`Are you sure you want to ${action.toUpperCase()} user '${targetUser}'?`)) return;
-
       try {
         const res = await fetch('/api/admin/users/action', {
           method: 'POST',
@@ -743,25 +810,17 @@
           body: JSON.stringify({ targetUser, action })
         });
         const data = await res.json();
-
         if (!res.ok) return alert(data.error || 'Action failed.');
-
         alert(data.message);
         fetchAdminUsers();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
     }
 
-    // Admin Ads Controls: Create, Toggle Active, Delete
     async function fetchAdminAds() {
       const list = document.getElementById('admin-ads-list');
       try {
-        const res = await fetch('/api/admin/ads', {
-          headers: { 'x-admin-key': currentAdminKey }
-        });
+        const res = await fetch('/api/admin/ads', { headers: { 'x-admin-key': currentAdminKey } });
         const data = await res.json();
-
         if (!data.success || !data.ads.length) {
           list.innerHTML = '<div style="color:#a4b0be; font-size:0.85rem;">No advertisements created.</div>';
           return;
@@ -774,16 +833,12 @@
               <span class="badge badge-${a.active ? 'active' : 'banned'}">${a.active ? 'ACTIVE' : 'INACTIVE'}</span>
             </div>
             <div>
-              <button class="action-btn ${a.active ? 'btn-mute' : 'btn-success'}" onclick="toggleAdStatus('${a.id}', ${!a.active})">
-                ${a.active ? 'Deactivate' : 'Activate'}
-              </button>
+              <button class="action-btn ${a.active ? 'btn-mute' : 'btn-success'}" onclick="toggleAdStatus('${a.id}', ${!a.active})">${a.active ? 'Deactivate' : 'Activate'}</button>
               <button class="action-btn btn-ban" onclick="deleteAd('${a.id}')">Delete</button>
             </div>
           </div>
         `).join('');
-      } catch (err) {
-        list.innerHTML = '<div style="color:#ff4757; font-size:0.85rem;">Failed to load admin advertisements.</div>';
-      }
+      } catch (err) { list.innerHTML = '<div style="color:#ff4757; font-size:0.85rem;">Failed to load admin ads.</div>'; }
     }
 
     async function saveAd() {
@@ -791,10 +846,7 @@
       const description = document.getElementById('ad-desc').value.trim();
       const url = document.getElementById('ad-url').value.trim();
       const icon = document.getElementById('ad-icon').value.trim();
-
-      if (!title || !description || !url) {
-        return alert('Please fill in title, description, and link URL.');
-      }
+      if (!title || !description || !url) return alert('Please fill in title, description, and link URL.');
 
       try {
         const res = await fetch('/api/admin/ads', {
@@ -803,20 +855,15 @@
           body: JSON.stringify({ title, description, url, icon })
         });
         const data = await res.json();
-
-        if (!res.ok) return alert(data.error || 'Failed to create advertisement.');
-
+        if (!res.ok) return alert(data.error || 'Failed to create ad.');
         alert(data.message);
         document.getElementById('ad-title').value = '';
         document.getElementById('ad-desc').value = '';
         document.getElementById('ad-url').value = '';
         document.getElementById('ad-icon').value = '';
-
         fetchAdminAds();
         fetchPublicAds();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
     }
 
     async function toggleAdStatus(id, active) {
@@ -827,33 +874,39 @@
           body: JSON.stringify({ active })
         });
         const data = await res.json();
-
         if (!res.ok) return alert(data.error || 'Failed to update ad state.');
-
         fetchAdminAds();
         fetchPublicAds();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
     }
 
     async function deleteAd(id) {
       if (!confirm('Are you sure you want to delete this advertisement?')) return;
-
       try {
         const res = await fetch(`/api/admin/ads/${id}`, {
           method: 'DELETE',
           headers: { 'x-admin-key': currentAdminKey }
         });
         const data = await res.json();
-
         if (!res.ok) return alert(data.error || 'Failed to delete ad.');
-
         fetchAdminAds();
         fetchPublicAds();
-      } catch (err) {
-        alert('Server unreachable.');
-      }
+      } catch (err) { alert('Server unreachable.'); }
+    }
+
+    async function resetLeaderboard(gameMode) {
+      if (!confirm(`Are you sure you want to reset ${gameMode ? gameMode + ' ' : 'all '}leaderboards?`)) return;
+      try {
+        const res = await fetch('/api/admin/leaderboard/reset', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-key': currentAdminKey },
+          body: JSON.stringify({ gameMode })
+        });
+        const data = await res.json();
+        if (!res.ok) return alert(data.error || 'Reset failed.');
+        alert(data.message);
+        fetchLeaderboard();
+      } catch (err) { alert('Server unreachable.'); }
     }
 
     function escapeHtml(str) {
@@ -862,6 +915,7 @@
 
     // Initialization
     updateUserUI();
+    fetchLeaderboard();
     fetchPublicAds();
     spawnCoin();
     update();
